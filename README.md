@@ -277,7 +277,10 @@ vehicle-service-management-system/
 │
 ├── Deliverables/
 │   ├── Database schema.docx
-│   └── UI Screenshots.pdf
+│   ├── UI Screenshots.pdf
+│   ├── LINQ_USAGE_OVERVIEW.pdf
+│   ├── SETUP_GUIDE_DOTNET8_ANGULAR20.pdf
+│   └── FRONTEND_(This setup is for Angular 21).pdf
 │
 ├── README.md                           # This file
 └── SETUP_INSTRUCTIONS.md              # Detailed setup guide
