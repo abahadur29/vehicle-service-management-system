@@ -283,7 +283,7 @@ vehicle-service-management-system/
 │   └── FRONTEND_(This setup is for Angular 21).pdf
 │
 ├── README.md                           # This file
-└── SETUP_INSTRUCTIONS.md              # Detailed setup guide
+
 ```
 
 ## Configuration
