@@ -1,0 +1,5 @@
+# --- Backend (.NET) ---
+**/bin/
+**/obj/
+.vs/
+*.user
