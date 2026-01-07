@@ -1,0 +1,318 @@
+<div class="page-container">
+  <h1>Reports & Analytics</h1>
+
+  <div *ngIf="reports$ | async as data" class="reports-grid">
+    <!-- Top Left: Monthly Revenue -->
+    <mat-card class="report-card monthly-revenue">
+      <mat-card-header>
+        <mat-card-title>Monthly Revenue (Last 6 Months)</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Chart">
+            <div class="vertical-chart-container">
+              @if (data.monthly.length === 0) {
+                <div class="no-data-placeholder">
+                  <mat-icon>bar_chart_outline</mat-icon>
+                  <p>No monthly revenue data available</p>
+                </div>
+              } @else {
+                <div class="vertical-bars-wrapper">
+                  @for (m of data.monthly; track m.month) {
+                    <div class="vertical-bar-item">
+                      <div class="bar-value" [title]="m.formattedPeriod + ': ₹' + (m.revenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})">
+                        ₹{{ (m.revenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}) }}
+                      </div>
+                      <div class="vertical-bar-wrapper">
+                        <div 
+                          class="vertical-bar monthly" 
+                          [style.height.%]="(data.maxMonthlyRevenue ?? 0) > 0 ? ((m.revenue || 0) / (data.maxMonthlyRevenue ?? 1)) * 100 : 0"
+                          [title]="m.formattedPeriod + ': ₹' + (m.revenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})">
+                        </div>
+                      </div>
+                      <div class="bar-label">{{ m.formattedPeriod }}</div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </mat-tab>
+          <mat-tab label="Table">
+            <mat-table [dataSource]="data.monthly">
+              <ng-container matColumnDef="period">
+                <mat-header-cell *matHeaderCellDef> Period </mat-header-cell>
+                <mat-cell *matCellDef="let m"> {{ m.formattedPeriod }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="revenue">
+                <mat-header-cell *matHeaderCellDef> Revenue </mat-header-cell>
+                <mat-cell *matCellDef="let m"> ₹{{ (m.revenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}) }} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="['period', 'revenue']"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: ['period', 'revenue'];"></mat-row>
+            </mat-table>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Top Right: Revenue by Service Type -->
+    <mat-card class="report-card revenue-by-type">
+      <mat-card-header>
+        <mat-card-title>Revenue by Service Type</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Chart">
+            <div class="pie-chart-container" *ngIf="data.revenueByType.length > 0; else noRevenueData">
+              <div class="pie-chart" [style.background]="getPieGradient(data.revenueByType)"></div>
+              <div class="pie-legend">
+                @for (r of data.revenueByType; track r.serviceType; let i = $index) {
+                  <div class="legend-item">
+                    <span class="dot" [style.background-color]="getColor(i, r)"></span>
+                    <span class="label">{{ r.serviceType || 'Other' }}</span>
+                    <span class="value">{{ r.percent | number:'1.0-1' }}%</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <ng-template #noRevenueData>
+              <div class="no-data-placeholder">
+                <mat-icon>pie_chart_outline</mat-icon>
+                <p>No revenue data available for service types</p>
+              </div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Table">
+            <mat-table [dataSource]="data.revenueByType">
+              <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef> Service Type </mat-header-cell>
+                <mat-cell *matCellDef="let r"> 
+                  {{ r.serviceType }}
+                  <span *ngIf="r.isOthers" class="others-badge">({{ r.serviceCount || 0 }} categories)</span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="revenue">
+                <mat-header-cell *matHeaderCellDef> Revenue </mat-header-cell>
+                <mat-cell *matCellDef="let r"> ₹{{ (r.revenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}) }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="percent">
+                <mat-header-cell *matHeaderCellDef> Percentage </mat-header-cell>
+                <mat-cell *matCellDef="let r"> {{ r.percent | number:'1.0-1' }}% </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="['type', 'revenue', 'percent']"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: ['type', 'revenue', 'percent'];"></mat-row>
+            </mat-table>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Bottom Left: Pending vs Completed Services -->
+    <mat-card class="report-card pending-completed">
+      <mat-card-header>
+        <mat-card-title>Pending vs Completed Services</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-comparison" *ngIf="data.pendingVsCompleted">
+          <div class="stat-item pending">
+            <div class="stat-value">{{ data.pendingVsCompleted.pendingCount }}</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-item completed">
+            <div class="stat-value">{{ data.pendingVsCompleted.completedCount }}</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+        <div class="status-breakdown" *ngIf="data.pendingVsCompleted.statusBreakdown">
+          <h4>Status Breakdown</h4>
+          <mat-table [dataSource]="data.pendingVsCompleted.statusBreakdown">
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let s"> {{ s.status }} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="count">
+              <mat-header-cell *matHeaderCellDef> Count </mat-header-cell>
+              <mat-cell *matCellDef="let s"> {{ s.count }} </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="['status', 'count']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['status', 'count'];"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Bottom Right: Technician Performance -->
+    <mat-card class="report-card tech-performance">
+      <mat-card-header>
+        <mat-card-title>Technician Performance</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Chart">
+            <div class="chart-container">
+              @if (data.techPerformance.length === 0) {
+                <div class="no-data-placeholder">
+                  <mat-icon>bar_chart_outline</mat-icon>
+                  <p>No technician performance data available</p>
+                </div>
+              } @else {
+                @for (t of data.techPerformance; track t.technicianName) {
+                  <div class="chart-row">
+                    <div class="label">{{ t.technicianName }} <small>({{ t.completedJobs }} jobs)</small></div>
+                    <div class="bar-wrapper">
+                      <div 
+                        class="bar tech-performance-bar" 
+                        [style.width.%]="(data.maxTechRevenue ?? 0) > 0 ? ((t.totalRevenue / (data.maxTechRevenue ?? 1)) * 100) : 0">
+                        <span class="value">₹{{ (t.totalRevenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </mat-tab>
+          <mat-tab label="Table">
+            <mat-table [dataSource]="data.techPerformance">
+              <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef> Technician </mat-header-cell>
+                <mat-cell *matCellDef="let t"> {{ t.technicianName }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="jobs">
+                <mat-header-cell *matHeaderCellDef> Jobs </mat-header-cell>
+                <mat-cell *matCellDef="let t"> {{ t.completedJobs }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="revenue">
+                <mat-header-cell *matHeaderCellDef> Revenue </mat-header-cell>
+                <mat-cell *matCellDef="let t"> ₹{{ (t.totalRevenue || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}) }} </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="['name', 'jobs', 'revenue']"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: ['name', 'jobs', 'revenue'];"></mat-row>
+            </mat-table>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Service History per Vehicle Report -->
+    <mat-card class="report-card vehicle-service-history">
+      <mat-card-header>
+        <mat-card-title>Service History per Vehicle</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (data.vehicleServiceHistory && data.vehicleServiceHistory.length > 0) {
+          <div class="vehicle-selection-section">
+            <mat-form-field appearance="outline" class="vehicle-selector">
+              <mat-label>Search Vehicle</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="vehicleSearchInput"
+                (input)="applyVehicleSearch()"
+                placeholder="Search by license plate, make, model, or year"
+                [matAutocomplete]="auto">
+              <mat-icon matSuffix>search</mat-icon>
+              <mat-autocomplete 
+                #auto="matAutocomplete"
+                (optionSelected)="onVehicleSelectedFromSearch($event.option.value)">
+                @for (vehicle of filteredVehicles; track vehicle.id) {
+                  <mat-option [value]="vehicle.id">{{ vehicle.display }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          @if (selectedVehicleId()) {
+            <div class="vehicle-history-section">
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Filter service history</mat-label>
+                <input matInput (keyup)="applyVehicleHistoryFilter($event)" placeholder="Ex. Oil Change" #historyFilter>
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+
+              <mat-table [dataSource]="vehicleHistoryDataSource" matSort>
+                <ng-container matColumnDef="serviceName">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Service Type </mat-header-cell>
+                  <mat-cell *matCellDef="let h"> {{ h.serviceName }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="completionDate">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Completion Date </mat-header-cell>
+                  <mat-cell *matCellDef="let h"> {{ h.completionDate | date:'dd/MM/yyyy' }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                  <mat-cell *matCellDef="let h"> {{ h.description }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="partsReplaced">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Parts Replaced </mat-header-cell>
+                  <mat-cell *matCellDef="let h">
+                    @if (h.partsReplaced && h.partsReplaced.length > 0) {
+                      <span class="parts-list">{{ h.partsReplaced.join(', ') }}</span>
+                    } @else {
+                      <span class="no-parts">None</span>
+                    }
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="totalCost">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Total Cost </mat-header-cell>
+                  <mat-cell *matCellDef="let h">
+                    {{ h.totalCost | currency:'INR':'symbol':'1.0-0' }}
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="vehicleHistoryDisplayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: vehicleHistoryDisplayedColumns;"></mat-row>
+                <tr class="mat-row no-data-row" *matNoDataRow>
+                  <td class="mat-cell" [attr.colspan]="vehicleHistoryDisplayedColumns.length">
+                    <div class="no-data-placeholder">
+                      <mat-icon>assignment</mat-icon>
+                      <p>No service history found for this vehicle.</p>
+                    </div>
+                  </td>
+                </tr>
+              </mat-table>
+              <mat-paginator #vehicleHistoryPaginator [pageSizeOptions]="[5, 10, 25, 50]" aria-label="Select page of service history"></mat-paginator>
+            </div>
+          } @else {
+            <div class="summary-table-section">
+              <p class="instruction-text">Select a vehicle above to view detailed service history, or view the summary below:</p>
+              <mat-table [dataSource]="data.vehicleServiceHistory">
+                <ng-container matColumnDef="vehicle">
+                  <mat-header-cell *matHeaderCellDef> Vehicle </mat-header-cell>
+                  <mat-cell *matCellDef="let v"> 
+                    <div class="vehicle-info">
+                      <div class="vehicle-name">{{ v.make }} {{ v.model }} ({{ v.year }})</div>
+                      <div class="vehicle-plate">{{ v.licensePlate }}</div>
+                    </div>
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="totalServices">
+                  <mat-header-cell *matHeaderCellDef> Services </mat-header-cell>
+                  <mat-cell *matCellDef="let v"> {{ v.totalServices }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="lastServiceDate">
+                  <mat-header-cell *matHeaderCellDef> Last Service </mat-header-cell>
+                  <mat-cell *matCellDef="let v"> 
+                    {{ v.lastServiceDate | date:'dd/MM/yyyy' }}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="lastServiceStatus">
+                  <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                  <mat-cell *matCellDef="let v"> 
+                    <span [class]="'status-badge ' + v.lastServiceStatus.toLowerCase().replace(' ', '-')">
+                      {{ v.lastServiceStatus }}
+                    </span>
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="['vehicle', 'totalServices', 'lastServiceDate', 'lastServiceStatus']"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: ['vehicle', 'totalServices', 'lastServiceDate', 'lastServiceStatus'];"></mat-row>
+              </mat-table>
+            </div>
+          }
+        } @else {
+          <div class="no-data-placeholder">
+            <mat-icon>directions_car</mat-icon>
+            <p>No vehicle service history data available</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

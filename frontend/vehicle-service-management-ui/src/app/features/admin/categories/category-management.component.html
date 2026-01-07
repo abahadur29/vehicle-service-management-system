@@ -1,0 +1,116 @@
+<div class="admin-page-container">
+  <div class="admin-page-header">
+    <h2>Service Categories</h2>
+    <div class="header-actions">
+      <button mat-flat-button color="primary" (click)="startCreate()">
+        <mat-icon>add</mat-icon>
+        Add Category
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="admin-card">
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Filter categories</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Oil Change" #input>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="admin-table-container">
+        <mat-table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                <mat-cell *matCellDef="let cat"> {{ cat.name | titlecase }} </mat-cell>
+              </ng-container>
+
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Base Price </mat-header-cell>
+            <mat-cell *matCellDef="let cat"> {{ cat.basePrice | currency:'INR':'symbol':'1.2-2':'en-IN' }} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+            <mat-cell *matCellDef="let cat">
+              <span [class]="'admin-status-badge ' + (cat.isActive !== false ? 'active' : 'inactive')">
+                {{ cat.isActive !== false ? 'Active' : 'Inactive' }}
+              </span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let cat">
+              <div class="admin-action-buttons">
+                <button mat-icon-button color="primary" (click)="startEdit(cat)" matTooltip="Edit category">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+          <tr class="mat-row no-data-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              <div class="admin-no-data">
+                <mat-icon>category</mat-icon>
+                <h3>No Categories Found</h3>
+                <p *ngIf="input.value">No categories matching the filter "{{input.value}}"</p>
+                <p *ngIf="!input.value">No service categories available.</p>
+              </div>
+            </td>
+          </tr>
+        </mat-table>
+
+        <mat-paginator class="admin-paginator" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of categories"></mat-paginator>
+      </div>
+  </mat-card>
+
+  @if (showCreateForm()) {
+    <mat-card class="admin-card">
+      <div class="admin-page-header">
+        <h3>Create New Category</h3>
+      </div>
+      <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="category-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Category Name</mat-label>
+            <input matInput formControlName="name" required>
+            @if (categoryForm.controls.name.invalid && categoryForm.controls.name.touched) {
+              <mat-error>Category name is required (min 2 characters)</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Base Price</mat-label>
+            <input matInput type="number" formControlName="basePrice" required>
+            <span matPrefix>₹&nbsp;</span>
+            @if (categoryForm.controls.basePrice.invalid && categoryForm.controls.basePrice.touched) {
+              <mat-error>Base price is required (must be >= 0)</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="isActive">
+              <mat-option [value]="true">Active</mat-option>
+              <mat-option [value]="false">Inactive</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-flat-button type="button" (click)="cancelEdit()">Cancel</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="categoryForm.invalid">
+            Create Category
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  }
+</div>
+

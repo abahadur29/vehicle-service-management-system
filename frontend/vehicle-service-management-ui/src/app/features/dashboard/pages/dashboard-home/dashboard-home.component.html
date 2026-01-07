@@ -1,0 +1,169 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="welcome-text">
+      <h1>Welcome back, {{ fullName }}!</h1>
+      <p class="role-badge">{{ role }} Dashboard</p>
+    </div>
+    <div class="date-display">
+      {{ today | date:'dd/MM/yyyy' }}
+    </div>
+  </header>
+
+  @if (role === 'admin' || role === 'manager') {
+    <div class="stats-grid" *ngIf="stats$ | async as stats">
+      <mat-card class="stat-card technicians">
+        <mat-card-content>
+          <div class="stat-icon"><mat-icon>engineering</mat-icon></div>
+          <div class="stat-info">
+            <span class="label">Active Technicians</span>
+            <h2 class="value">{{ stats.workload?.length }}</h2>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="dashboard-main-grid" *ngIf="stats$ | async as stats">
+      <mat-card class="workload-card">
+        <mat-card-header>
+          <mat-card-title>Technician Workload</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="stats.workload" class="workload-table">
+            <ng-container matColumnDef="technician">
+              <th mat-header-cell *matHeaderCellDef> Technician </th>
+              <td mat-cell *matCellDef="let t"> {{ t.technicianName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="activeTasks">
+              <th mat-header-cell *matHeaderCellDef> Active Tasks </th>
+              <td mat-cell *matCellDef="let t"> 
+                <span class="task-count" [class.high]="t.activeTasks > 5">
+                  {{ t.activeTasks }}
+                </span>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="workloadColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: workloadColumns;"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="quick-actions-card">
+        <mat-card-header>
+          <mat-card-title>Quick Actions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="actions-list">
+          <button mat-stroked-button color="primary" routerLink="/admin/service-requests">
+            <mat-icon>assignment</mat-icon> Assign Tasks
+          </button>
+          <button mat-stroked-button color="accent" routerLink="/reports" *ngIf="role === 'manager'">
+            <mat-icon>bar_chart</mat-icon> View Reports
+          </button>
+          <button mat-stroked-button routerLink="/admin/inventory">
+            <mat-icon>inventory_2</mat-icon> Manage Inventory
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  } @else if (role === 'customer') {
+    <div class="customer-dashboard">
+      <div class="quick-stats">
+        <mat-card class="action-card" (click)="openBookService()" style="cursor: pointer;">
+          <mat-card-content>
+            <mat-icon color="primary">add_task</mat-icon>
+            <h3>Book a Service</h3>
+            <p>Schedule maintenance for your vehicle</p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="action-card" routerLink="/vehicles">
+          <mat-card-content>
+            <mat-icon color="accent">directions_car</mat-icon>
+            <h3>My Vehicles</h3>
+            <p>Manage your registered vehicles</p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="action-card" (click)="openServiceHistory()" style="cursor: pointer;">
+          <mat-card-content>
+            <mat-icon color="warn">history</mat-icon>
+            <h3>Service History</h3>
+            <p>Track status and view past services</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  } @else if (role === 'technician') {
+    <div class="technician-dashboard">
+      <div class="stats-grid">
+        <mat-card class="stat-card assigned">
+          <mat-card-content>
+            <div class="stat-icon"><mat-icon>assignment</mat-icon></div>
+            <div class="stat-info">
+              <span class="label">Total Assigned</span>
+              <h2 class="value">{{ totalAssigned }}</h2>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card in-progress">
+          <mat-card-content>
+            <div class="stat-icon"><mat-icon>build</mat-icon></div>
+            <div class="stat-info">
+              <span class="label">In Progress</span>
+              <h2 class="value">{{ inProgress }}</h2>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card completed">
+          <mat-card-content>
+            <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+            <div class="stat-info">
+              <span class="label">Completed</span>
+              <h2 class="value">{{ completed }}</h2>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <mat-card class="task-overview-card">
+        <mat-card-header>
+          <mat-card-title>Today's Overview</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (todayTasks.length > 0) {
+            <div class="task-list">
+              @for (task of todayTasks; track task.id) {
+                <div class="task-item">
+                  <div class="task-info">
+                    <div class="task-id">#{{ task.id }}</div>
+                    <div class="task-details">
+                      <div class="task-vehicle">{{ task.vehicleModel }}</div>
+                      <div class="task-description">{{ task.description }}</div>
+                    </div>
+                  </div>
+                  <div class="task-status">
+                    <span class="status-badge" [class]="task.status.toLowerCase().replace(' ', '-')">
+                      {{ task.status }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="task-actions">
+              <button mat-stroked-button routerLink="/service-requests/my-tasks">
+                View All Tasks
+              </button>
+            </div>
+          } @else {
+            <div class="no-tasks">
+              <mat-icon>assignment</mat-icon>
+              <p>No active tasks at the moment</p>
+              <button mat-stroked-button routerLink="/service-requests/my-tasks">
+                Go to My Tasks
+              </button>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

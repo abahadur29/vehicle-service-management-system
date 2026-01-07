@@ -1,0 +1,170 @@
+<div class="grid" [class.grid-admin]="isAdmin()" [class.grid-manager]="isManager()">
+  <mat-card class="stat">
+    <div class="label">Available Technicians</div>
+    <div class="value">{{ availableTechCount() }}</div>
+  </mat-card>
+
+  <mat-card class="stat">
+    <div class="label">Low Stock Alerts</div>
+    <div class="value">{{ lowStockCount() }}</div>
+  </mat-card>
+
+  @if (isAdmin() && (totalUsersCount() > 0 || isAdmin())) {
+    <mat-card class="stat">
+      <div class="label">Total Users</div>
+      <div class="value">{{ totalUsersCount() || '—' }}</div>
+    </mat-card>
+  }
+</div>
+
+@if (isAdmin() && roleDistribution().length > 0) {
+  <mat-card class="table-card mt-2 role-distribution-card">
+    <mat-card-header>
+      <mat-card-title>User Role Distribution</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="vertical-chart-container">
+        <div class="vertical-bars-wrapper">
+          @for (role of roleDistribution(); track role.roleName) {
+            <div class="vertical-bar-item">
+              <div class="bar-value" [title]="role.roleName + ': ' + role.userCount + ' users'">
+                {{ role.userCount }}
+              </div>
+              <div class="vertical-bar-wrapper">
+                <div 
+                  class="vertical-bar role-distribution" 
+                  [style.height.%]="maxUserCount() > 0 ? (role.userCount / maxUserCount()) * 100 : 0"
+                  [title]="role.roleName + ': ' + role.userCount + ' users'">
+                </div>
+              </div>
+              <div class="bar-label">{{ role.roleName }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (lowStock().length) {
+  <mat-card class="table-card mt-2 low-stock-card">
+    <mat-card-content>
+      <div class="table-container mat-elevation-z8">
+        <mat-table [dataSource]="lowStock()">
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Part Name </mat-header-cell>
+            <mat-cell *matCellDef="let p"> {{ p.name | titlecase }} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="stockQuantity">
+            <mat-header-cell *matHeaderCellDef> Quantity Left </mat-header-cell>
+            <mat-cell *matCellDef="let p">
+              <span [class.critical]="p.stockQuantity < 5">{{ p.stockQuantity }}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="unitPrice">
+            <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
+            <mat-cell *matCellDef="let p"> {{ (p.price || p.unitPrice || 0) | currency:'INR':'symbol':'1.2-2':'en-IN' }} </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="stockColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: stockColumns"></mat-row>
+        </mat-table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (isManager()) {
+  <mat-card class="table-card mt-2 reports-analytics-card">
+    <mat-card-header>
+      <mat-card-title>Service Overview</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="analytics-grid">
+        <!-- Technician Workload -->
+        <div class="analytics-section">
+          <h3 class="section-title">Technician Workload</h3>
+          @if (technicianWorkload().length > 0) {
+            <div class="workload-chart">
+              @for (tech of technicianWorkload(); track tech.technicianName) {
+                <div class="workload-item">
+                  <div class="workload-label">{{ tech.technicianName }}</div>
+                  <div class="workload-bar-wrapper">
+                    <div 
+                      class="workload-bar" 
+                      [style.width.%]="maxWorkload() > 0 ? (tech.activeTasks / maxWorkload()) * 100 : 0"
+                      [title]="tech.technicianName + ': ' + tech.activeTasks + ' active tasks'">
+                      <span class="workload-value">{{ tech.activeTasks }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="no-data-placeholder">
+              <mat-icon>engineering</mat-icon>
+              <p>No technician workload data available</p>
+            </div>
+          }
+        </div>
+
+        <!-- Pending vs Completed Services -->
+        <div class="analytics-section">
+          <h3 class="section-title">Pending vs Completed Services</h3>
+          @if (pendingVsCompleted().pendingCount > 0 || pendingVsCompleted().completedCount > 0) {
+            <div class="status-breakdown">
+              <div class="status-summary">
+                <div class="status-item pending">
+                  <div class="status-value">{{ pendingVsCompleted().pendingCount }}</div>
+                  <div class="status-label">Pending</div>
+                </div>
+                <div class="status-item completed">
+                  <div class="status-value">{{ pendingVsCompleted().completedCount }}</div>
+                  <div class="status-label">Completed</div>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="no-data-placeholder">
+              <mat-icon>assignment</mat-icon>
+              <p>No service status data available</p>
+            </div>
+          }
+        </div>
+
+        <!-- Monthly Service Volume -->
+        <div class="analytics-section full-width">
+          <h3 class="section-title">Monthly Service Volume (Last 6 Months)</h3>
+          @if (monthlyServiceVolume().length > 0) {
+            <div class="vertical-chart-container">
+              <div class="vertical-bars-wrapper">
+                @for (month of monthlyServiceVolume(); track month.formattedPeriod) {
+                  <div class="vertical-bar-item">
+                    <div class="bar-value" [title]="month.formattedPeriod + ': ' + month.serviceCount + ' services'">
+                      {{ month.serviceCount }}
+                    </div>
+                    <div class="vertical-bar-wrapper">
+                      <div 
+                        class="vertical-bar monthly-volume" 
+                        [style.height.%]="maxMonthlyVolume() > 0 ? (month.serviceCount / maxMonthlyVolume()) * 100 : 0"
+                        [title]="month.formattedPeriod + ': ' + month.serviceCount + ' services'">
+                      </div>
+                    </div>
+                    <div class="bar-label">{{ month.formattedPeriod }}</div>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="no-data-placeholder">
+              <mat-icon>bar_chart</mat-icon>
+              <p>No monthly service volume data available</p>
+            </div>
+          }
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

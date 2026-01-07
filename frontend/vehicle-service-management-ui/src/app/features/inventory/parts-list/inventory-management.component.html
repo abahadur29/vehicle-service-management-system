@@ -1,0 +1,89 @@
+<div class="admin-page-container">
+  <div class="admin-page-header">
+    <h2>Inventory Management</h2>
+  </div>
+
+  <mat-card class="admin-card">
+    <mat-form-field appearance="outline" class="admin-filter-field">
+      <mat-label>Filter inventory</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Brake Pad" #input>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <div class="admin-table-container">
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Part Name </mat-header-cell>
+        <mat-cell *matCellDef="let part"> {{ part.name | titlecase }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="stockQuantity">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Stock Level </mat-header-cell>
+        <mat-cell *matCellDef="let part"> 
+          <span class="admin-status-badge stock" [class.low-stock]="(part.stockQuantity || 0) < 5" [class.out-of-stock]="(part.stockQuantity || 0) === 0">
+            {{ part.stockQuantity }}
+            <mat-icon *ngIf="(part.stockQuantity || 0) < 5">warning</mat-icon>
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Unit Price </mat-header-cell>
+        <mat-cell *matCellDef="let part">
+          @if (isTechnician) {
+            <span class="text-muted">N/A</span>
+          } @else {
+            {{ (part.price || part.unitPrice || 0) | currency:'INR':'symbol':'1.2-2':'en-IN' }}
+          }
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let part">
+          @if (isTechnician) {
+            <span class="text-muted">No actions available</span>
+          } @else {
+            <div class="admin-action-buttons">
+              <!-- Manager: Can update stock only -->
+              @if (isManager) {
+                <button mat-icon-button color="primary" (click)="updateStock(part)" matTooltip="Update Stock">
+                  <mat-icon>inventory</mat-icon>
+                </button>
+              }
+              <!-- Admin: Can update stock, price, and activate/deactivate -->
+              @if (isAdmin) {
+                <button mat-icon-button color="primary" (click)="updateStock(part)" matTooltip="Update Stock">
+                  <mat-icon>inventory</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="updatePrice(part)" matTooltip="Edit Price">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button [color]="part.isActive ? 'warn' : 'primary'" (click)="toggleActive(part)" [matTooltip]="part.isActive ? 'Deactivate' : 'Activate'">
+                  <mat-icon>{{ part.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                </button>
+              }
+            </div>
+          }
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToDisplay;"></mat-row>
+
+      <tr class="mat-row no-data-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="columnsToDisplay.length">
+          <div class="admin-no-data">
+            <mat-icon>inventory_2</mat-icon>
+            <h3>No Inventory Items Found</h3>
+            <p *ngIf="input.value">No items matching the filter "{{input.value}}"</p>
+            <p *ngIf="!input.value">No inventory items available.</p>
+          </div>
+        </td>
+      </tr>
+    </mat-table>
+
+    <mat-paginator class="admin-paginator" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of inventory"></mat-paginator>
+  </div>
+  </mat-card>
+</div>

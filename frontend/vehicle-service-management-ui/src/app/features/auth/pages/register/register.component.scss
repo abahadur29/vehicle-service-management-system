@@ -1,0 +1,250 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-gradient);
+  padding: 1rem;
+}
+
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.brand-section {
+  flex: 1;
+  background: #2563eb;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+
+  .brand-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -0.05em;
+  }
+
+  p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    max-width: 300px;
+    line-height: 1.6;
+  }
+}
+
+.auth-card {
+  flex: 1;
+  padding: 2.5rem;
+  border-radius: 0;
+  box-shadow: none;
+  background: white;
+  border: none;
+  max-width: none;
+  margin: 0;
+
+  .card-header {
+    margin-bottom: 2rem;
+    
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #64748b;
+    }
+  }
+}
+
+.pw-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 12px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    transition: color 0.2s ease;
+
+    &::before {
+      content: '○';
+      font-size: 10px;
+    }
+
+    &.ok {
+      color: #059669;
+      &::before {
+        content: '✓';
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.password-field-wrapper {
+  margin-bottom: 1.5rem;
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 0;
+    
+    &:not(:last-of-type) {
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  mat-form-field {
+    ::ng-deep {
+      .mat-mdc-form-field-subscript-wrapper {
+        margin-top: 4px;
+        min-height: 20px; 
+      }
+      
+      .mat-mdc-form-field-error {
+        color: #dc2626; 
+        font-size: 0.75rem;
+        font-weight: 400;
+        line-height: 1.4;
+        margin-top: 2px;
+        padding: 0;
+        animation: fadeInSubtle 0.2s ease-out;
+      }
+    }
+  }
+}
+
+.password-rules-container {
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-top: 12px; 
+  animation: slideDown 0.3s ease-out;
+
+  .rules-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin: 0 0 8px 0;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInSubtle {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .msg-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &.success {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  &.error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .countdown {
+    font-weight: 500;
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+}
+
+.submit-btn {
+  height: 48px;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

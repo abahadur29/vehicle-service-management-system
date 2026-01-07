@@ -1,0 +1,402 @@
+// Admin Design System - Shared Styles
+// This file provides consistent styling across all admin pages
+
+
+// 1. Page Container & Layout
+.admin-page-container {
+  padding: 0;
+  width: 100%;
+}
+
+
+// 2. Page Header (Standardized)
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0;
+
+  h1, h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+}
+
+
+// 3. Card Styling (Standardized)
+
+.admin-card {
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  h2, h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+
+// 4. Filter/Search Field (Standardized)
+
+.admin-filter-field {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: white !important;
+    border-radius: 12px !important;
+  }
+}
+
+
+// 5. Table Container (Standardized)
+
+.admin-table-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  table,
+  mat-table {
+    width: 100%;
+  }
+
+  .mat-mdc-header-cell,
+  mat-header-cell {
+    background-color: #f8fafc;
+    font-weight: 700;
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .mat-mdc-cell,
+  mat-cell {
+    padding: 1rem 1.5rem;
+    color: #334155;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .mat-mdc-row,
+  mat-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+
+    &:last-child .mat-mdc-cell,
+    &:last-child mat-cell {
+      border-bottom: none;
+    }
+
+    &.no-data-row {
+      &:hover {
+        background-color: transparent;
+      }
+
+      .mat-mdc-cell,
+      .mat-cell,
+      mat-cell {
+        width: 100%;
+        padding: 0;
+        border: none;
+        text-align: center;
+      }
+    }
+  }
+}
+
+
+// 6. Pagination (Standardized)
+
+.admin-paginator {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 12px 12px;
+}
+
+
+// 7. Action Buttons (Standardized - Icon Buttons)
+
+.admin-action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  button {
+    transition: all 0.2s ease;
+
+    &[disabled] {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:not([disabled]):hover {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+
+// 8. Status Badges (Standardized)
+
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+
+  // Active/Enabled states
+  &.active,
+  &.enabled,
+  &.completed,
+  &.closed,
+  &.paid {
+    background-color: #f0fdf4;
+    color: #16a34a;
+  }
+
+  // Inactive/Disabled/Cancelled states
+  &.inactive,
+  &.disabled,
+  &.cancelled {
+    background-color: #fef2f2;
+    color: #dc2626;
+    font-weight: 700;
+  }
+
+  // Pending/In Progress states
+  &.pending,
+  &.requested,
+  &.assigned,
+  &.in-progress {
+    background-color: #fff7ed;
+    color: #ea580c;
+  }
+
+  // Urgent/Priority states
+  &.urgent,
+  &.critical {
+    background-color: #fef2f2;
+    color: #dc2626;
+  }
+
+  // Normal/Default states
+  &.normal,
+  &.default {
+    background-color: #f1f5f9;
+    color: #475569;
+  }
+
+  // Low stock warning
+  &.low-stock {
+    background-color: #fff7ed;
+    color: #ea580c;
+  }
+
+  // Out of stock
+  &.out-of-stock {
+    background-color: #fef2f2;
+    color: #dc2626;
+  }
+
+  // Stock badge (for inventory)
+  &.stock {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+
+    &.low-stock {
+      background-color: #fff3e0;
+      color: #ef6c00;
+    }
+
+    &.out-of-stock {
+      background-color: #ffebee;
+      color: #d32f2f;
+    }
+  }
+
+  // Icon inside badge
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+}
+
+
+// 9. No Data Placeholder (Standardized)
+
+.admin-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+  width: 100%;
+  box-sizing: border-box;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+    color: #94a3b8;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+    color: #64748b;
+  }
+}
+
+
+// 10. Form Styling (Standardized)
+
+.admin-form {
+  display: grid;
+  gap: 16px;
+
+  &.two-columns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &.three-columns {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    &.two-columns,
+    &.three-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+
+// 11. KPI Stat Cards (Dashboard)
+
+.admin-stat-card {
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background: white;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .label {
+    opacity: 0.75;
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+}
+
+
+// 12. Responsive Breakpoints
+
+@media (max-width: 900px) {
+  .admin-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  .admin-filter-field {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-page-header {
+    h1, h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .admin-card {
+    padding: 16px;
+  }
+
+  .admin-table-container {
+    .mat-mdc-header-cell,
+    mat-header-cell,
+    .mat-mdc-cell,
+    mat-cell {
+      padding: 0.75rem 1rem;
+      font-size: 0.8125rem;
+    }
+  }
+}
+

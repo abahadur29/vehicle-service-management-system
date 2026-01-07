@@ -1,0 +1,78 @@
+@use '../../../shared/styles/admin-common' as *;
+
+.page-container {
+  @extend .admin-page-container;
+}
+
+.page-header {
+  @extend .admin-page-header;
+}
+
+.filter-field {
+  @extend .admin-filter-field;
+}
+
+.table-container {
+  @extend .admin-table-container;
+}
+
+.mat-mdc-paginator {
+  @extend .admin-paginator;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+  max-width: 200px;
+}
+
+.urgent {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.priority-badge {
+  @extend .admin-status-badge;
+
+  &.urgent {
+    @extend .urgent;
+  }
+
+  &.normal {
+    @extend .normal;
+  }
+}
+
+.assign-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.status-badge {
+  @extend .admin-status-badge;
+}
+
+.assigned-tech {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.no-data-container {
+  @extend .admin-no-data;
+}

@@ -1,0 +1,111 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="brand-section">
+      <mat-icon class="brand-icon">directions_car</mat-icon>
+      <h1>Welcome</h1>
+      <p>Create an account to request and manage vehicle services easily.</p>
+    </div>
+
+    <mat-card class="auth-card">
+      <div class="card-header">
+        <h2>Get Started</h2>
+        <p>Join our community for seamless vehicle maintenance.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Full name</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="fullName" autocomplete="name" placeholder="John Doe" />
+          @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+            <mat-error>Full name is required (min 3 characters).</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput formControlName="email" autocomplete="email" placeholder="your@email.com" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone number</mat-label>
+          <mat-icon matPrefix>phone</mat-icon>
+          <input matInput formControlName="phoneNumber" autocomplete="tel" placeholder="+1 234 567 890" />
+          @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+            <mat-error>Phone number is required.</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="password-field-wrapper">
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input matInput type="password" formControlName="password" autocomplete="new-password" placeholder="••••••••" />
+            <mat-hint>Min 8 chars, upper, lower, number, special.</mat-hint>
+            @if (form.controls.password.touched && form.controls.password.invalid && !form.controls.password.errors?.['strongPassword']) {
+              <mat-error>Password is required.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Confirm Password</mat-label>
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" placeholder="••••••••" />
+            @if (form.controls.confirmPassword.touched && form.controls.confirmPassword.invalid) {
+              @if (form.controls.confirmPassword.errors?.['required']) {
+                <mat-error>Please confirm your password.</mat-error>
+              } @else if (form.controls.confirmPassword.errors?.['passwordMismatch'] || form.errors?.['passwordMismatch']) {
+                <mat-error>Passwords do not match.</mat-error>
+              }
+            }
+          </mat-form-field>
+
+          @if (form.controls.password.dirty || form.controls.password.touched) {
+            <div class="password-rules-container">
+              <p class="rules-title">Password Requirements:</p>
+              <ul class="pw-rules">
+                <li [class.ok]="pwRules.minLength">at least 8 characters</li>
+                <li [class.ok]="pwRules.hasUpper">one uppercase letter</li>
+                <li [class.ok]="pwRules.hasLower">one lowercase letter</li>
+                <li [class.ok]="pwRules.hasNumber">one number</li>
+                <li [class.ok]="pwRules.hasSpecial">one special character</li>
+              </ul>
+            </div>
+          }
+        </div>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting() || registrationSucceeded()" class="submit-btn">
+          @if (isSubmitting()) {
+            <span class="spinner-container">
+              <mat-icon class="rotating">sync</mat-icon>
+              Creating account...
+            </span>
+          } @else {
+            Register
+          }
+        </button>
+
+        @if (serverMessage()) {
+          <div class="message-box" [class.success]="registrationSucceeded()" [class.error]="!registrationSucceeded()">
+            <mat-icon>{{ registrationSucceeded() ? 'check_circle' : 'info' }}</mat-icon>
+            <div class="msg-content">
+              <span class="msg-text">{{ serverMessage() }}</span>
+              @if (registrationSucceeded()) {
+                <p class="countdown">Redirecting to login in {{ countdown() }} seconds...</p>
+              }
+            </div>
+          </div>
+        }
+
+        <p class="switch">
+          Already have an account?
+          <a routerLink="/auth/login">Login here</a>
+        </p>
+      </form>
+    </mat-card>
+  </div>
+</div>

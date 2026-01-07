@@ -1,0 +1,323 @@
+### Vehicle Service Management API - HTTP Requests
+### Base URL: https://localhost:7033
+### Note: Replace {token} with actual JWT token after login
+
+@baseUrl = https://localhost:7033
+@token = your-jwt-token-here
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### Register User
+POST {{baseUrl}}/api/Auth/register
+Content-Type: application/json
+
+{
+  "FullName": "John Doe",
+  "Email": "john.doe@example.com",
+  "Password": "Test@1234",
+  "PhoneNumber": "1234567890"
+}
+
+### Login
+POST {{baseUrl}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "Email": "admin@example.com",
+  "Password": "Admin@1234"
+}
+
+### ============================================
+### VEHICLES (Customer)
+### ============================================
+
+### Get My Vehicles
+GET {{baseUrl}}/api/Vehicles/my-vehicles
+Authorization: Bearer {{token}}
+
+### Add Vehicle
+POST {{baseUrl}}/api/Vehicles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "LicensePlate": "ABC-1234",
+  "Model": "Camry",
+  "Make": "Toyota",
+  "Year": 2020
+}
+
+### Get Vehicle History
+GET {{baseUrl}}/api/Vehicles/1/history
+Authorization: Bearer {{token}}
+
+### ============================================
+### SERVICE REQUESTS
+### ============================================
+
+### Get My Bookings (Customer)
+GET {{baseUrl}}/api/Services
+Authorization: Bearer {{token}}
+
+### Book Service (Customer)
+POST {{baseUrl}}/api/Services
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "VehicleId": 1,
+  "ServiceCategoryId": 1,
+  "Description": "Oil change and filter replacement",
+  "Priority": "Normal",
+  "RequestedDate": "2026-01-15T10:00:00Z"
+}
+
+### Get All Service Requests (Manager/Admin)
+GET {{baseUrl}}/api/Services/all
+Authorization: Bearer {{token}}
+
+### Get Technician Tasks
+GET {{baseUrl}}/api/Services/tasks
+Authorization: Bearer {{token}}
+
+### Assign Technician
+POST {{baseUrl}}/api/Services/assign
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "RequestId": 1,
+  "Status": "Assigned",
+  "TechnicianId": "technician-user-id"
+}
+
+### Complete Service (Technician)
+POST {{baseUrl}}/api/Services/complete
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "RequestId": 1,
+  "PartsUsed": [
+    {
+      "PartId": 1,
+      "Quantity": 2
+    }
+  ],
+  "Remarks": "Service completed successfully. All parts replaced."
+}
+
+### Cancel Booking
+DELETE {{baseUrl}}/api/Services/1
+Authorization: Bearer {{token}}
+
+### Reschedule Service
+PUT {{baseUrl}}/api/Services/1/reschedule
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "NewRequestedDate": "2026-01-20T10:00:00Z"
+}
+
+### Get Notifications
+GET {{baseUrl}}/api/Services/notifications
+Authorization: Bearer {{token}}
+
+### ============================================
+### BILLING
+### ============================================
+
+### Get My Invoices
+GET {{baseUrl}}/api/Billing
+Authorization: Bearer {{token}}
+
+### Get Invoice by Service ID
+GET {{baseUrl}}/api/Billing/invoice/1
+Authorization: Bearer {{token}}
+
+### Pay Invoice
+POST {{baseUrl}}/api/Billing/pay/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### ADMIN - USER MANAGEMENT
+### ============================================
+
+### Get All Users
+GET {{baseUrl}}/api/Admin/users
+Authorization: Bearer {{token}}
+
+### Get Technicians
+GET {{baseUrl}}/api/Admin/technicians
+Authorization: Bearer {{token}}
+
+### Create User
+POST {{baseUrl}}/api/Admin/create-user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "FullName": "Jane Smith",
+  "Email": "jane.smith@example.com",
+  "Password": "Test@1234",
+  "PhoneNumber": "9876543210",
+  "Role": "Technician"
+}
+
+### Update User Role
+PUT {{baseUrl}}/api/Admin/update-role
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "UserId": "user-id-here",
+  "NewRole": "Manager"
+}
+
+### Delete User
+DELETE {{baseUrl}}/api/Admin/users/user-id-here
+Authorization: Bearer {{token}}
+
+### ============================================
+### ADMIN - INVENTORY MANAGEMENT
+### ============================================
+
+### Get All Parts
+GET {{baseUrl}}/api/Admin/parts
+Authorization: Bearer {{token}}
+
+### Get Low Stock
+GET {{baseUrl}}/api/Admin/low-stock
+Authorization: Bearer {{token}}
+
+### Add Part
+POST {{baseUrl}}/api/Admin/add-part
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "Name": "Brake Pad Set",
+  "StockQuantity": 50,
+  "UnitPrice": 2500.00
+}
+
+### Update Stock
+PUT {{baseUrl}}/api/Admin/update-stock/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "Quantity": 10
+}
+
+### Update Price
+PUT {{baseUrl}}/api/Admin/update-price/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "NewPrice": 3000.00
+}
+
+### Toggle Part Active Status
+POST {{baseUrl}}/api/Admin/toggle-active/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### ADMIN - SERVICE CATEGORIES
+### ============================================
+
+### Get Categories
+GET {{baseUrl}}/api/Admin/categories?activeOnly=false
+
+### Manage Category
+POST {{baseUrl}}/api/Admin/manage-category
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "Id": 0,
+  "Name": "Full Service",
+  "BasePrice": 5000.00,
+  "Description": "Complete vehicle service including oil change, filter replacement, and inspection",
+  "IsActive": true
+}
+
+### ============================================
+### ADMIN - SERVICE APPROVAL
+### ============================================
+
+### Approve Service
+POST {{baseUrl}}/api/Admin/approve-service/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### ADMIN - REPORTS
+### ============================================
+
+### Get Revenue Report
+GET {{baseUrl}}/api/Admin/revenue-report
+Authorization: Bearer {{token}}
+
+### Get Monthly Stats
+GET {{baseUrl}}/api/Admin/monthly-stats
+Authorization: Bearer {{token}}
+
+### Get Revenue by Service Type
+GET {{baseUrl}}/api/Admin/revenue-by-type
+Authorization: Bearer {{token}}
+
+### Get User Role Distribution
+GET {{baseUrl}}/api/Admin/user-role-distribution
+Authorization: Bearer {{token}}
+
+### ============================================
+### REPORTS (Manager)
+### ============================================
+
+### Get Technician Workload
+GET {{baseUrl}}/api/Reports/technician-workload
+Authorization: Bearer {{token}}
+
+### Get Revenue Report
+GET {{baseUrl}}/api/Reports/revenue-report
+Authorization: Bearer {{token}}
+
+### Get Monthly Stats
+GET {{baseUrl}}/api/Reports/monthly-stats
+Authorization: Bearer {{token}}
+
+### Get By Priority
+GET {{baseUrl}}/api/Reports/by-priority/Urgent
+Authorization: Bearer {{token}}
+
+### Get Tech Performance
+GET {{baseUrl}}/api/Reports/tech-performance
+Authorization: Bearer {{token}}
+
+### Get Revenue by Service Type
+GET {{baseUrl}}/api/Reports/revenue-by-type
+Authorization: Bearer {{token}}
+
+### Get Pending vs Completed
+GET {{baseUrl}}/api/Reports/pending-vs-completed
+Authorization: Bearer {{token}}
+
+### Get Vehicle Service History
+GET {{baseUrl}}/api/Reports/vehicle-service-history
+Authorization: Bearer {{token}}
+
+### ============================================
+### INVENTORY
+### ============================================
+
+### Get Parts
+GET {{baseUrl}}/api/Inventory/parts
+Authorization: Bearer {{token}}
+
+### Get Low Stock
+GET {{baseUrl}}/api/Inventory/low-stock
+Authorization: Bearer {{token}}

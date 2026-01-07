@@ -1,0 +1,61 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Service History</h1>
+  </div>
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filter services</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Completed" #input>
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="table-container mat-elevation-z8">
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Service ID </mat-header-cell>
+        <mat-cell *matCellDef="let service"> #{{ service.id }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="vehicle">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Vehicle </mat-header-cell>
+        <mat-cell *matCellDef="let service"> {{ service.vehicleModel }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+        <mat-cell *matCellDef="let service"> {{ service.description }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+        <mat-cell *matCellDef="let service">
+          <span class="status-badge" [class]="service.status.toLowerCase().replace(' ', '-')">
+            {{ service.status }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="completionDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Completion Date </mat-header-cell>
+        <mat-cell *matCellDef="let service"> {{ (service.completionDate || service.requestedDate) | date:'dd/MM/yyyy' }} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+      <tr class="mat-row no-data-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <div class="no-data-container">
+            <mat-icon>history</mat-icon>
+            <h3>No Service History Available</h3>
+            <p *ngIf="input.value">No services matching the filter "{{input.value}}"</p>
+            <p *ngIf="!input.value">You haven't completed any services yet.</p>
+          </div>
+        </td>
+      </tr>
+    </mat-table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" aria-label="Select page of service history"></mat-paginator>
+  </div>
+</div>
+

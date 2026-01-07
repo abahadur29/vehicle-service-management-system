@@ -1,0 +1,31 @@
+@use '../../../shared/styles/admin-common' as *;
+
+// Use shared admin styles
+.page-container {
+  @extend .admin-page-container;
+}
+
+.page-header {
+  @extend .admin-page-header;
+}
+
+.filter-field {
+  @extend .admin-filter-field;
+}
+
+.table-container {
+  @extend .admin-table-container;
+}
+
+.mat-mdc-paginator {
+  @extend .admin-paginator;
+}
+
+.no-data-container {
+  @extend .admin-no-data;
+}
+
+.stock-badge {
+  @extend .admin-status-badge;
+  @extend .stock;
+}

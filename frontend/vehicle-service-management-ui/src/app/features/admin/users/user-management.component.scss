@@ -1,0 +1,61 @@
+@use '../../../shared/styles/admin-common' as *;
+
+// Use shared admin styles
+.card {
+  @extend .admin-card;
+}
+
+.filter-field {
+  @extend .admin-filter-field;
+}
+
+.table-container {
+  @extend .admin-table-container;
+}
+
+.no-data-container {
+  @extend .admin-no-data;
+}
+
+.form {
+  @extend .admin-form;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+}
+
+.hint {
+  margin-top: 8px;
+  opacity: 0.75;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.admin-role {
+  font-weight: 600;
+  color: #3f51b5;
+}
+
+.admin-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  vertical-align: middle;
+  color: #64748b;
+}
+
+.action-btn {
+  @extend .admin-action-buttons;
+  display: inline-flex;
+  margin-right: 8px;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}
